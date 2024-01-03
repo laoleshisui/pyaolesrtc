@@ -1,13 +1,16 @@
 import ctypes
 import time
 
-from aolesrtc.aolesrtc import Controller, DataIOFactory, DataIOType_AUDIO, DataOutput, P2PClientDataIO, P2PModuleObserver, UINT8Vector
+from aolesrtc.aolesrtc import Controller, DataIOFactory, DataIOType_AUDIO, DataIOType_I420, DataOutput, P2PClientDataIO, P2PModuleObserver, UINT8Vector
 
 global last_id
 
 class PythonAudioSink(DataOutput):
     def OnDataAudioOut(self, audio_data, bits_per_sample, sample_rate, number_of_channels, number_of_frames):
         print('OnDataAudioOut:', number_of_frames)
+class PythonVideoSink(DataOutput):
+    def OnDataYUVOut(self, id, width, height, data_y, stride_y, data_u, stride_u, data_v, stride_v):
+        print('OnDataYUVOut:', width)
 
 class PythonP2PModuleObserver(P2PModuleObserver):
     def OnConnEvent(self, ok):
@@ -29,17 +32,28 @@ def CreatePeer(is_sender, is_receiver):
     dataiofactory = DataIOFactory(controller)
 
     if is_sender: 
-        source = dataiofactory.CreateDataIOSource(DataIOType_AUDIO)
-        source = None
-        p2p_client.AddLocalAudioSource("audio", source)
+        asource = dataiofactory.CreateDataIOSource(DataIOType_AUDIO)
+        asource = None # use microphone
+        # p2p_client.AddLocalAudioSource("audio", asource)
+
+        vsource = dataiofactory.CreateDataIOSource(DataIOType_I420)
+        p2p_client.AddLocalVideoSource("video", vsource)
+
         p2p_client.Login()
-        return {"p2p_client" :p2p_client, "audio_source":source, "p2p_observer": p2p_observer}
+        return {"p2p_client" :p2p_client, "audio_source":asource, "video_source":vsource, "p2p_observer": p2p_observer}
     if is_receiver:
         py_asink = PythonAudioSink(DataIOType_AUDIO)
-        sink = dataiofactory.CreateDataIOSink(py_asink)
-        p2p_client.AddLocalAudioSink("audio", sink)
+        py_asink.thisown = False
+        asink = dataiofactory.CreateDataIOSink(py_asink)
+        # p2p_client.AddRemoteAudioSink("audio", asink)
+
+        py_vsink = PythonVideoSink(DataIOType_I420)
+        py_vsink.thisown = False
+        vsink = dataiofactory.CreateDataIOSink(py_vsink)
+        p2p_client.AddRemoteVideoSink("video", vsink)
+
         p2p_client.Login()
-        return {"p2p_client" :p2p_client, "audio_sink":sink, "p2p_observer": p2p_observer}
+        return {"p2p_client" :p2p_client, "audio_sink":asink, "video_sink":vsink, "p2p_observer": p2p_observer}
     
 
 if __name__ == '__main__':
@@ -53,23 +67,55 @@ if __name__ == '__main__':
     time.sleep(2)
 
     peer_data_1["p2p_client"].ConnectToPeer(last_id)
-    time.sleep(1000)
+    # time.sleep(1000)
 
-    # pcm_file = open("/path/to/video_24000_s16le.pcm", "rb")
-    # pcm_vector = UINT8Vector()
-    # while True:
-    #     pcm_vector.clear()
-    #     for i in range(240 * 2):
-    #         pcm_byte = pcm_file.read(1)
-    #         if not pcm_byte:
-    #             pcm_file.seek(0)
-    #             pcm_byte = pcm_file.read(1)
-    #         pcm_vector.push_back(pcm_byte[0])
+    yuv_file = open("/path/to/video.yuv", "rb")
+    width = int(1080)
+    height = int(1920)
+    y_vector = UINT8Vector()
+    u_vector = UINT8Vector()
+    v_vector = UINT8Vector()
+    while True:
+        y_vector.clear()
+        u_vector.clear()
+        v_vector.clear()
+        for i in range(width * height):
+            y_byte = yuv_file.read(1)
+            if not y_byte:
+                yuv_file.seek(0)
+                y_byte = yuv_file.read(1)
+            y_vector.push_back(y_byte[0])
+        for i in range(width * height // 4):
+            u_byte = yuv_file.read(1)
+            if not u_byte:
+                yuv_file.seek(0)
+                u_byte = yuv_file.read(1)
+            u_vector.push_back(u_byte[0])
+        for i in range(width * height // 4):
+            v_byte = yuv_file.read(1)
+            if not v_byte:
+                yuv_file.seek(0)
+                v_byte = yuv_file.read(1)
+            v_vector.push_back(v_byte[0])
+        peer_data_1["video_source"].SetAdaption(False)
+        peer_data_1["video_source"].OnDataYUVIn(width, height, y_vector, width, u_vector, width//2, v_vector, width//2)
+        time.sleep(0.020)
 
-    #     peer_data_1["audio_source"].OnDataAudioIn(pcm_vector, 16, 24000, 1, 240)
+    pcm_file = open("/path/to/video_24000_s16le.pcm", "rb")
+    pcm_vector = UINT8Vector()
+    while True:
+        pcm_vector.clear()
+        for i in range(240 * 2):
+            pcm_byte = pcm_file.read(1)
+            if not pcm_byte:
+                pcm_file.seek(0)
+                pcm_byte = pcm_file.read(1)
+            pcm_vector.push_back(pcm_byte[0])
 
-    #     # print ('one time:',pcm_vector[0], pcm_vector.size())
-    #     time.sleep(0.008)
+        peer_data_1["audio_source"].OnDataAudioIn(pcm_vector, 16, 24000, 1, 240)
+
+        # print ('one time:',pcm_vector[0], pcm_vector.size())
+        time.sleep(0.008)
         
 
-    # pcm_file.close()
+    pcm_file.close()

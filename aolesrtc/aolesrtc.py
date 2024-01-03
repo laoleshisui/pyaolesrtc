@@ -170,8 +170,8 @@ class DataOutput(object):
             _self = self
         _aolesrtc_python_api.DataOutput_swiginit(self, _aolesrtc_python_api.new_DataOutput(_self, type))
 
-    def OnDataYUVOut(self, *args):
-        return _aolesrtc_python_api.DataOutput_OnDataYUVOut(self, *args)
+    def OnDataYUVOut(self, id, width, height, data_y, stride_y, data_u, stride_u, data_v, stride_v):
+        return _aolesrtc_python_api.DataOutput_OnDataYUVOut(self, id, width, height, data_y, stride_y, data_u, stride_u, data_v, stride_v)
 
     def OnDataAudioOut(self, audio_data, bits_per_sample, sample_rate, number_of_channels, number_of_frames):
         return _aolesrtc_python_api.DataOutput_OnDataAudioOut(self, audio_data, bits_per_sample, sample_rate, number_of_channels, number_of_frames)
@@ -193,8 +193,8 @@ class DataInput(object):
     def SetState(self, is_live):
         return _aolesrtc_python_api.DataInput_SetState(self, is_live)
 
-    def OnTimeStamp(self, us):
-        return _aolesrtc_python_api.DataInput_OnTimeStamp(self, us)
+    def SetAdaption(self, adaption):
+        return _aolesrtc_python_api.DataInput_SetAdaption(self, adaption)
 
     def OnDataYUVIn(self, *args):
         return _aolesrtc_python_api.DataInput_OnDataYUVIn(self, *args)
@@ -205,7 +205,7 @@ class DataInput(object):
 
 # Register DataInput in _aolesrtc_python_api:
 _aolesrtc_python_api.DataInput_swigregister(DataInput)
-DataIOType__None = _aolesrtc_python_api.DataIOType__None
+DataIOType_NONE = _aolesrtc_python_api.DataIOType_NONE
 DataIOType_I420 = _aolesrtc_python_api.DataIOType_I420
 DataIOType_I422 = _aolesrtc_python_api.DataIOType_I422
 DataIOType_I444 = _aolesrtc_python_api.DataIOType_I444
