@@ -1,0 +1,16 @@
+janus-center-server: 
+  ip: "127.0.0.1"
+  port: 10003
+
+janus-center-http-server: 
+  ip: "101.133.238.239"
+  port: 10005
+
+
+p2p-server: 
+  ip: "101.133.238.239"
+  port: 10001
+
+stun-servers: 
+  - ip: "101.133.238.239"
+    port: 5349

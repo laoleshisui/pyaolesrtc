@@ -1,0 +1,5 @@
+**.DS_Store
+aolesrtc.egg-info
+build
+dist
+**/**.log
