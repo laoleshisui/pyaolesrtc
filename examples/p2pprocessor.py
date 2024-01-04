@@ -1,3 +1,4 @@
+import multiprocessing
 import queue
 import ctypes
 import threading
@@ -49,6 +50,7 @@ class PythonP2PModuleObserver(P2PModuleObserver):
         print('OnConnEvent:', ok)
 
     def OnLoginEvent(self, ok, id):
+        print("reset last_id of this process :", id)
         global last_id
         last_id = id
         print('OnLoginEvent:', ok, id)
@@ -159,25 +161,44 @@ def send_pcm(peer_data, pcm_file):
     pcm_file.close()
 
 
-if __name__ == '__main__':
+def CreateSender():
     Controller.LoadConfigFile("./defaults.yaml")
-    Controller.InitLog("./p2p.log")
+    Controller.InitLog("./p2p_sender.log")
 
+    time.sleep(3) # wait for receiver logined
     peer_data_1 = CreatePeer(is_sender=True, is_receiver=False)
-    time.sleep(2)
+    time.sleep(1)
 
-    peer_data_2 = CreatePeer(is_sender=False, is_receiver=True)
-    time.sleep(2)
+    # assume the last id is of the sender
+    receiver_id = last_id - 1
+    print("ConnectToPeer (receiver_id = last_id - 1):", receiver_id)
+    peer_data_1["p2p_client"].ConnectToPeer(receiver_id)
 
-    peer_data_1["p2p_client"].ConnectToPeer(last_id)
-
-    send_yuv_thread = threading.Thread(target=send_yuv, args=(peer_data_1, "/path/to/metaman-synthetise/video.yuv",))
+    send_yuv_thread = threading.Thread(target=send_yuv, args=(peer_data_1, "/path/to/video.yuv",))
     send_yuv_thread.start()
 
     send_pcm_thread = threading.Thread(target=send_pcm, args=(peer_data_1, "/path/to/video_24000_s16le.pcm",))
     send_pcm_thread.start()
 
-    render(peer_data_2["video_sink"])
-
     send_yuv_thread.join()
     send_pcm_thread.join()
+
+def CreateReceiver():
+    Controller.LoadConfigFile("./defaults.yaml")
+    Controller.InitLog("./p2p_receiver.log")
+
+    peer_data_2 = CreatePeer(is_sender=False, is_receiver=True)
+
+    render(peer_data_2["video_sink"])
+
+if __name__ == '__main__':
+    send_yuv_process = multiprocessing.Process(target=CreateSender)
+    send_yuv_process.start()
+
+    send_pcm_process = multiprocessing.Process(target=CreateReceiver)
+    send_pcm_process.start()
+
+    # CreateReceiver()
+
+    send_yuv_process.join()
+    send_pcm_process.join()
