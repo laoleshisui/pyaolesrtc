@@ -28,7 +28,7 @@ class PythonVideoSink(DataOutput):
         
 
     def OnDataYUVOut(self, id, width, height, data_y, stride_y, data_u, stride_u, data_v, stride_v):
-        print('OnDataYUVOut:', width , height)
+        print('OnDataYUVOut:', width , height, data_y)
 
         yuv = GetData(data_y, width*height*3//2)
 
@@ -108,55 +108,42 @@ def send_yuv(peer_data, yuv_file):
     yuv_file = open(yuv_file, "rb")
     width = int(1080)
     height = int(1920)
-    y_vector = UINT8Vector()
-    u_vector = UINT8Vector()
-    v_vector = UINT8Vector()
     while True:
-        y_vector.clear()
-        u_vector.clear()
-        v_vector.clear()
         y_byte = yuv_file.read(width * height)
         if not y_byte:
                 yuv_file.seek(0)
                 continue
-        for i in range(width * height):
-            y_vector.push_back(y_byte[i])
-
         u_byte = yuv_file.read(width * height // 4)
         if not u_byte:
             yuv_file.seek(0)
             continue
-        for i in range(width * height // 4):
-            u_vector.push_back(u_byte[i])
-
         v_byte = yuv_file.read(width * height // 4)
         if not v_byte:
             yuv_file.seek(0)
             continue
-        for i in range(width * height // 4):
-            v_vector.push_back(v_byte[i])
-        
+
+        y_vector = UINT8Vector(y_byte)
+        u_vector = UINT8Vector(u_byte)
+        v_vector = UINT8Vector(v_byte)
+
         # peer_data["video_source"].SetAdaption(False)
         peer_data["video_source"].OnDataYUVIn(width, height, y_vector, width, u_vector, width//2, v_vector, width//2)
         print("send yuv")
-        time.sleep(0.001)
+        time.sleep(0.020)#  (1 / 25fps) - 20ms(used by runing code) = 30ms
     yuv_file.close()
 
 def send_pcm(peer_data, pcm_file):
     pcm_file = open(pcm_file, "rb")
-    pcm_vector = UINT8Vector()
     while True:
         pcm_vector.clear()
         for i in range(240 * 2):
             pcm_byte = pcm_file.read(1)
             if not pcm_byte:
                 pcm_file.seek(0)
-                pcm_byte = pcm_file.read(1)
-            pcm_vector.push_back(pcm_byte[0])
+            continue
+        pcm_vector = UINT8Vector(pcm_byte)
 
         peer_data["audio_source"].OnDataAudioIn(pcm_vector, 16, 24000, 1, 240)
-
-        # print ('one time:',pcm_vector[0], pcm_vector.size())
         time.sleep(0.008)
     pcm_file.close()
 
@@ -192,13 +179,11 @@ def CreateReceiver():
     render(peer_data_2["video_sink"])
 
 if __name__ == '__main__':
-    send_yuv_process = multiprocessing.Process(target=CreateSender)
-    send_yuv_process.start()
+    sender_process = multiprocessing.Process(target=CreateSender)
+    sender_process.start()
 
-    send_pcm_process = multiprocessing.Process(target=CreateReceiver)
-    send_pcm_process.start()
+    receiver_process = multiprocessing.Process(target=CreateReceiver)
+    receiver_process.start()
 
-    # CreateReceiver()
-
-    send_yuv_process.join()
-    send_pcm_process.join()
+    sender_process.join()
+    receiver_process.join()
