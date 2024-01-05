@@ -142,8 +142,6 @@ def send_pcm(peer_data, pcm_file):
         pcm_vector = UINT8Vector(pcm_byte)
 
         peer_data["audio_source"].OnDataAudioIn(pcm_vector, 16, 24000, 1, 240)
-
-        # print ('one time:',pcm_vector[0], pcm_vector.size())
         time.sleep(0.008)
     pcm_file.close()
 
