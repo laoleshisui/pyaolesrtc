@@ -1,3 +1,4 @@
+import array
 import queue
 import ctypes
 import threading
@@ -5,7 +6,7 @@ import time
 import cv2
 import numpy as np
 
-from aolesrtc.aolesrtc import Controller, DataIOFactory, DataIOType_AUDIO, DataIOType_I420, DataOutput, P2PClientDataIO, P2PModuleObserver, UINT8Vector
+from aolesrtc.aolesrtc import Controller, DataIOFactory, DataIOType_AUDIO, DataIOType_I420, DataOutput, P2PClientDataIO, P2PModuleObserver, UINT8Vector, cast_ptr_uint8_t, cast_ptr_void
 
 global last_id
 
@@ -106,42 +107,38 @@ def send_yuv(peer_data, yuv_file):
     yuv_file = open(yuv_file, "rb")
     width = int(1080)
     height = int(1920)
+
+    byte_array = array.array('B', [0]*(width*height * 3//2))
+    address, arr_length = byte_array.buffer_info()
+    y_byte_ptr = cast_ptr_uint8_t(address)
+    u_byte_ptr = cast_ptr_uint8_t(address+width * height)
+    v_byte_ptr = cast_ptr_uint8_t(address+width * height*5//4)
     while True:
-        y_byte = yuv_file.read(width * height)
-        if not y_byte:
+        byte_read = yuv_file.readinto(byte_array)
+        if byte_read < arr_length:
                 yuv_file.seek(0)
                 continue
-        u_byte = yuv_file.read(width * height // 4)
-        if not u_byte:
-            yuv_file.seek(0)
-            continue
-        v_byte = yuv_file.read(width * height // 4)
-        if not v_byte:
-            yuv_file.seek(0)
-            continue
-
-        y_vector = UINT8Vector(y_byte)
-        u_vector = UINT8Vector(u_byte)
-        v_vector = UINT8Vector(v_byte)
 
         # peer_data["video_source"].SetAdaption(False)
-        peer_data["video_source"].OnDataYUVIn(width, height, y_vector, width, u_vector, width//2, v_vector, width//2)
+        peer_data["video_source"].OnDataYUVIn(width, height, y_byte_ptr, width, u_byte_ptr, width//2, v_byte_ptr, width//2)
+
         print("send yuv")
-        time.sleep(0.020)#  (1 / 25fps) - 20ms(used by runing code) = 20ms
+        time.sleep(0.035)#  (1 / 25fps) - 5ms(used by runing code) = 35ms
     yuv_file.close()
 
 def send_pcm(peer_data, pcm_file):
     pcm_file = open(pcm_file, "rb")
+
+    byte_array = array.array('B', [0]*240 * 2)
+    address, arr_length = byte_array.buffer_info()
+    pcm_byte_ptr = cast_ptr_void(address)
     while True:
-        pcm_byte = pcm_file.read(240 * 2)
-        if not pcm_byte:
+        byte_read = pcm_file.readinto(byte_array)
+        if byte_read < arr_length:
             pcm_file.seek(0)
             continue
-        pcm_vector = UINT8Vector(pcm_byte)
 
-        peer_data["audio_source"].OnDataAudioIn(pcm_vector, 16, 24000, 1, 240)
-
-        # print ('one time:',pcm_vector[0], pcm_vector.size())
+        peer_data["audio_source"].OnDataAudioIn(pcm_byte_ptr, 16, 24000, 1, 240)
         time.sleep(0.008)
     pcm_file.close()
 

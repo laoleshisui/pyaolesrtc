@@ -205,6 +205,12 @@ class DataInput(object):
 
 # Register DataInput in _aolesrtc_python_api:
 _aolesrtc_python_api.DataInput_swigregister(DataInput)
+
+def cast_ptr_void(p):
+    return _aolesrtc_python_api.cast_ptr_void(p)
+
+def cast_ptr_uint8_t(p):
+    return _aolesrtc_python_api.cast_ptr_uint8_t(p)
 DataIOType_NONE = _aolesrtc_python_api.DataIOType_NONE
 DataIOType_I420 = _aolesrtc_python_api.DataIOType_I420
 DataIOType_I422 = _aolesrtc_python_api.DataIOType_I422
