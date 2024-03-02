@@ -7,6 +7,9 @@ A rtc library supporting janus & p2p, more program languages (python, C#, C++ no
 
 [AolesRTC github](https://github.com/laoleshisui/pyaolesrtc)
 
+# Demo video
+[BiliBili](https://www.bilibili.com/video/BV1ta4y127w8/?spm_id_from=333.337.search-card.all.click&vd_source=46ec781a0f61978d02e1d561b34fa772)
+
 # How to install
 ## manually(recommended currently)
     python3.10 setup.py sdist build
