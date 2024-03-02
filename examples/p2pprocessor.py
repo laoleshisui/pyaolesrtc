@@ -157,10 +157,10 @@ def CreateSender():
     print("ConnectToPeer (receiver_id = last_id - 1):", receiver_id)
     peer_data_1["p2p_client"].ConnectToPeer(receiver_id)
 
-    send_yuv_thread = threading.Thread(target=send_yuv, args=(peer_data_1, "/path/to/video.yuv",))
+    send_yuv_thread = threading.Thread(target=send_yuv, args=(peer_data_1, "/path/to/video_1080x1920_25fps.yuv",))
     send_yuv_thread.start()
 
-    send_pcm_thread = threading.Thread(target=send_pcm, args=(peer_data_1, "/path/to/video_24000_s16le.pcm",))
+    send_pcm_thread = threading.Thread(target=send_pcm, args=(peer_data_1, "/path/to/video_24000.pcm",))
     send_pcm_thread.start()
 
     send_yuv_thread.join()

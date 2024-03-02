@@ -1,13 +1,14 @@
 # Aoles RTC
+Aim to make RTC easy.
 
-A easy & simple rtc library supporting janus & p2p
+Only support python 3.10.13 now.
 
-[aolesrtc github](https://github.com/laoleshisui/pyaolesrtc)
+A rtc library supporting janus & p2p, more program languages (python, C#, C++ now) in the future.
 
-Only support python 3.10.13.
+[AolesRTC github](https://github.com/laoleshisui/pyaolesrtc)
 
 # How to install
-## build manually
+## manually(recommended currently)
     python3.10 setup.py sdist build
     pip3.10 install ./dist/aolesrtc-xxx.tar.gz
 
@@ -17,8 +18,21 @@ Only support python 3.10.13.
 # Dependences
 ## Linux(x86_64)
     export LD_LIBRARY_PATH=/path/to/aolesrtc/lib/linux/x86_64/lib
-## Mac(arm)
+## Mac(arm)(recommended currently)
     brew install python@3.10
+
+# Prepare raw files for test
+```
+#video
+ffmpeg -i source.mp4 \
+-f rawvideo -pix_fmt yuv420p -s 1080x1920 -r 25 \
+-t 20 -y ./examples/video_1080x1920_25fps.yuv
+
+#audio
+ffmpeg -i source.mp4 \
+-f  s16le -ac 1 -ar 24000 \
+-t 20 -y ./examples/video_24000.pcm
+```
 
 # Examples
 ## P2P
@@ -39,7 +53,7 @@ def CreateSender():
     print("ConnectToPeer (receiver_id = last_id - 1):", receiver_id)
     peer_data_1["p2p_client"].ConnectToPeer(receiver_id)
 
-    send_yuv_thread = threading.Thread(target=send_yuv, args=(peer_data_1, "/path/to/video.yuv",))
+    send_yuv_thread = threading.Thread(target=send_yuv, args=(peer_data_1, "/path/to/video_1080x1920_25fps.yuv",))
     send_yuv_thread.start()
 
     send_pcm_thread = threading.Thread(target=send_pcm, args=(peer_data_1, "/path/to/video_24000_s16le.pcm",))
