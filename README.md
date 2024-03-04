@@ -37,6 +37,14 @@ ffmpeg -i source.mp4 \
 -t 20 -y ./examples/video_24000.pcm
 ```
 
+# Privatization deployment
+1. Deploy the server with docker
+```
+sudo docker run -d -i --net=host --name=aserver --platform=linux/amd64 --restart=always laoleshisui/aserver:202310202340 /home/aserver/bin/aserver -f /home/aserver/defaults.yaml
+```
+2. Config your own server ip in defaults.yaml
+
+
 # Examples
 ## P2P
 See examples/p2pprocessor.py for more details
