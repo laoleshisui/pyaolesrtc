@@ -40,7 +40,6 @@ ffmpeg -i source.mp4 \
 # Privatization deployment
 1. Deploy the server with docker
 ```
-sudo unzip docker_aserver_202310202340.tar.zip
 sudo docker load docker_aserver_202310202340.tar
 sudo docker run -d -i --net=host --name=aserver --platform=linux/amd64 --restart=always laoleshisui/aserver:202310202340 /home/aserver/bin/aserver -f /home/aserver/defaults.yaml
 ```
