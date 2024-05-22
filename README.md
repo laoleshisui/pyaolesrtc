@@ -50,7 +50,7 @@ sudo docker run -d -i --net=host --name=aserver --platform=linux/amd64 --restart
 ## P2P
 See examples/p2pprocessor.py for more details
 
-1. Create a sender to send video frame and audio sample. If the receiver's id is known, you can just connect it with the id and nothing else.
+1. Create a sender to send video frame and audio sample. If the receiver's id is known, you can just connect it with the id without anything else.
 ```python
 def CreateSender():
     Controller.LoadConfigFile("./defaults.yaml")
