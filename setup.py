@@ -16,7 +16,7 @@ setup(name='aolesrtc',
       license='MIT License',
       packages=find_packages(),
       platforms=["macosx_arm64", "linux_x86_64"],
-      python_requires="==3.10.13",
+      python_requires="==3.11.9",
       include_package_data=True,
       classifiers=[
           'Development Status :: 3 - Alpha',

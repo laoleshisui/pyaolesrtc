@@ -196,6 +196,9 @@ class DataInput(object):
     def SetAdaption(self, adaption):
         return _aolesrtc_python_api.DataInput_SetAdaption(self, adaption)
 
+    def AdaptOutputFormat(self, landscape_width, landscape_height, max_landscape_pixel_count, portrait_width, portrait_height, max_portrait_pixel_count, max_fps):
+        return _aolesrtc_python_api.DataInput_AdaptOutputFormat(self, landscape_width, landscape_height, max_landscape_pixel_count, portrait_width, portrait_height, max_portrait_pixel_count, max_fps)
+
     def OnDataYUVIn(self, *args):
         return _aolesrtc_python_api.DataInput_OnDataYUVIn(self, *args)
 
@@ -311,6 +314,9 @@ class P2PClientDataIO(object):
 
     def Close(self):
         return _aolesrtc_python_api.P2PClientDataIO_Close(self)
+
+    def SetAudioPlayout(self, playout):
+        return _aolesrtc_python_api.P2PClientDataIO_SetAudioPlayout(self, playout)
 
     def AddP2PModuleObserver(self, observer):
         return _aolesrtc_python_api.P2PClientDataIO_AddP2PModuleObserver(self, observer)
@@ -667,6 +673,9 @@ class JanusVideoRoomClientDataIO(object):
     def LeaveRoom(self, room_id):
         return _aolesrtc_python_api.JanusVideoRoomClientDataIO_LeaveRoom(self, room_id)
 
+    def SetAudioPlayout(self, playout):
+        return _aolesrtc_python_api.JanusVideoRoomClientDataIO_SetAudioPlayout(self, playout)
+
     def AddVideoRoomClientObserver(self, observer):
         return _aolesrtc_python_api.JanusVideoRoomClientDataIO_AddVideoRoomClientObserver(self, observer)
     __swig_destroy__ = _aolesrtc_python_api.delete_JanusVideoRoomClientDataIO
@@ -689,6 +698,9 @@ class JanusAudioBridgeClient(object):
 
     def AddRemoteAudioSink(self, label, sink):
         return _aolesrtc_python_api.JanusAudioBridgeClient_AddRemoteAudioSink(self, label, sink)
+
+    def SetAudioPlayout(self, playout):
+        return _aolesrtc_python_api.JanusAudioBridgeClient_SetAudioPlayout(self, playout)
 
     def AddObserver(self, observer):
         return _aolesrtc_python_api.JanusAudioBridgeClient_AddObserver(self, observer)

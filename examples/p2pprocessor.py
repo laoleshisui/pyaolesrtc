@@ -67,8 +67,8 @@ def CreatePeer(is_sender, is_receiver):
     dataiofactory = DataIOFactory(controller)
 
     if is_sender: 
-        asource = dataiofactory.CreateDataIOSource(DataIOType_AUDIO)
-        # asource = None # use microphone
+        # asource = dataiofactory.CreateDataIOSource(DataIOType_AUDIO)
+        asource = None # use microphone
         p2p_client.AddLocalAudioSource("audio", asource)
 
         vsource = dataiofactory.CreateDataIOSource(DataIOType_I420)
@@ -148,7 +148,7 @@ def CreateSender():
     Controller.LoadConfigFile("./defaults.yaml")
     Controller.InitLog("./p2p_sender.log")
 
-    time.sleep(3) # wait for receiver logined
+    time.sleep(1) # wait for receiver logined
     peer_data_1 = CreatePeer(is_sender=True, is_receiver=False)
     time.sleep(1)
 

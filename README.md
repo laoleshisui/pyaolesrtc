@@ -1,7 +1,7 @@
 # Aoles RTC
 Aim to make RTC easy.
 
-Only support python 3.10.13 now.
+Only support python 3.11.9 now.
 
 A rtc library supporting janus & p2p, more program languages (python, C#, C++ now) in the future.
 
@@ -12,11 +12,11 @@ A rtc library supporting janus & p2p, more program languages (python, C#, C++ no
 
 # How to install
 ## manually(recommended currently)
-    python3.10 setup.py sdist build
-    pip3.10 install ./dist/aolesrtc-xxx.tar.gz
+    python3 setup.py sdist build
+    pip3 install ./dist/aolesrtc-xxx.tar.gz
 
 ## pypi
-    pip3.10 install aolesrtc
+    pip3 install aolesrtc
 
 # Dependences
 ## Linux(x86_64)
@@ -50,7 +50,7 @@ sudo docker run -d -i --net=host --name=aserver --platform=linux/amd64 --restart
 ## P2P
 See examples/p2pprocessor.py for more details
 
-1. Create a sender to send video frame and audio sample. If the receiver's id is known, you can just connect it with the id without anything else.
+1. Create a sender to send video frame and audio sample. If the receiver's id is known, you can just connect it with the id.
 ```python
 def CreateSender():
     Controller.LoadConfigFile("./defaults.yaml")
@@ -74,7 +74,7 @@ def CreateSender():
     send_yuv_thread.join()
     send_pcm_thread.join()
 ```
-2. Create a receiver to receive video frame and audio sample, you can get the data in the callback and also play audio automatically if not callback
+1. Create a receiver to receive video frame and audio sample, you can get the data in the callback and also play audio automatically if not callback
 
 ```python
 def CreateReceiver():

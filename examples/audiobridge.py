@@ -53,11 +53,11 @@ if __name__ == '__main__':
     Controller.InitLog("./audiobridge.log")
     controller = Controller()
 
-    janus_center_client = JanusCenterClient(controller)
-    janus_center_observer = JanusCenterClientObserver()
-    janus_center_client.AddObserver(janus_center_observer)
-    janus_center_client.GetJanus()
-    time.sleep(2)
+    # janus_center_client = JanusCenterClient(controller)
+    # janus_center_observer = JanusCenterClientObserver()
+    # janus_center_client.AddObserver(janus_center_observer)
+    # janus_center_client.GetJanus()
+    # time.sleep(2)
 
     audiobridge_client = JanusAudioBridgeClient(controller)
     ab_client_observer = JanusClientObserver(audiobridge_client)
@@ -65,17 +65,19 @@ if __name__ == '__main__':
     audiobridge_client.AddObserver(ab_client_observer)
 
     audiobridge_client.CreateSession(janus_url)
-    time.sleep(2)
+    time.sleep(1)
 
     dataiofactory = DataIOFactory(controller)
     asource = dataiofactory.CreateDataIOSource(DataIOType_AUDIO)
     py_asink = PythonAudioSink(DataIOType_AUDIO)
+    py_asink.thisown = True
     asink = dataiofactory.CreateDataIOSink(py_asink)
 
     audiobridge_client.AddLocalAudioSource("audio", asource)
-    audiobridge_client.AddLocalAudioSink("audio", asink)
-    audiobridge_client.Join(1234, 1234, "aoles", '', False) #-5~256 error when cast
-    time.sleep(10)
+    # audiobridge_client.AddLocalAudioSink("audio", asink)
+    audiobridge_client.AddRemoteAudioSink("janus", asink)
+    audiobridge_client.Join(1234, 1112, "yangxian", '', False) #-5~256 error when cast
+    time.sleep(1)
     audiobridge_client.ConfigureWithOffer()
 
     audiobridge_client.ListParticipants(1234)

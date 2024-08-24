@@ -148,14 +148,14 @@ if __name__ == '__main__':
     Controller.InitLog("./p2p.log")
 
     peer_data_1 = CreatePeer(is_sender=True, is_receiver=False)
-    time.sleep(2)
+    time.sleep(1)
 
     peer_data_2 = CreatePeer(is_sender=False, is_receiver=True)
-    time.sleep(2)
+    time.sleep(1)
 
     peer_data_1["p2p_client"].ConnectToPeer(last_id)
 
-    send_yuv_thread = threading.Thread(target=send_yuv, args=(peer_data_1, "/path/to/metaman-synthetise/video.yuv",))
+    send_yuv_thread = threading.Thread(target=send_yuv, args=(peer_data_1, "/path/to/video.yuv",))
     send_yuv_thread.start()
 
     send_pcm_thread = threading.Thread(target=send_pcm, args=(peer_data_1, "/path/to/video_24000_s16le.pcm",))

@@ -53,29 +53,33 @@ if __name__ == '__main__':
     Controller.InitLog("./videoroom.log")
     controller = Controller()
 
-    janus_center_client = JanusCenterClient(controller)
-    janus_center_observer = JanusCenterClientObserver()
-    janus_center_client.AddObserver(janus_center_observer)
-    janus_center_client.GetJanus()
-    time.sleep(2)
+    # janus_center_client = JanusCenterClient(controller)
+    # janus_center_observer = JanusCenterClientObserver()
+    # janus_center_client.AddObserver(janus_center_observer)
+    # janus_center_client.GetJanus()
+    # time.sleep(2)
 
     videoroom_client = JanusVideoRoomClientDataIO(controller)
     vr_client_observer = JanusClientObserver(videoroom_client)
 
     videoroom_client.AddVideoRoomClientObserver(vr_client_observer)
 
+    print("janus_url:", janus_url)
     videoroom_client.CreateSession(janus_url)
-    time.sleep(2)
+    time.sleep(0.1)
 
     dataiofactory = DataIOFactory(controller)
     asource = dataiofactory.CreateDataIOSource(DataIOType_AUDIO)
+
     py_asink = PythonAudioSink(DataIOType_AUDIO)
+    py_asink.thisown = True
     asink = dataiofactory.CreateDataIOSink(py_asink)
 
     videoroom_client.AddLocalAudioSource("audio", asource)
-    videoroom_client.AddLocalAudioSink("audio", asink)
+    # videoroom_client.AddLocalAudioSink("audio", asink)
+    videoroom_client.AddRemoteAudioSink("janus", asink)
     videoroom_client.Publish(1234, 1234, "aoles") #-5~256 error when cast
-    time.sleep(10)
+    time.sleep(1)
 
     videoroom_client.ListParticipants(1234)
 
